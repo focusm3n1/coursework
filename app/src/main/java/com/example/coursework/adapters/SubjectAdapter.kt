@@ -1,4 +1,4 @@
-package com.example.coursework
+package com.example.coursework.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,10 +6,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.coursework.R
+import com.example.coursework.SubjectItem
 import com.example.coursework.fragments.ActionInterface
 
 class SubjectAdapter(
-    private val scheduleItems: List<ScheduleItem>,
+    private val subjectItems: List<SubjectItem>,
     private val action: ActionInterface
 ) : RecyclerView.Adapter<SubjectAdapter.ViewHolder>() {
 
@@ -29,7 +31,7 @@ class SubjectAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = scheduleItems[position]
+        val item = subjectItems[position]
 
         holder.numTextView.text = item.num
         holder.timeTextView.text = item.time
@@ -41,10 +43,6 @@ class SubjectAdapter(
         var isAddNoteButtonVisible = false
 
         holder.itemView.setOnClickListener {
-            it.animate().scaleX(0.95f).scaleY(0.95f).setDuration(100).withEndAction {
-                it.animate().scaleX(1f).scaleY(1f).setDuration(100).start()
-            }
-
             if (isAddNoteButtonVisible) {
                 holder.addNoteButton.visibility = View.GONE
             } else {
@@ -60,6 +58,6 @@ class SubjectAdapter(
     }
 
     override fun getItemCount(): Int {
-        return scheduleItems.size
+        return subjectItems.size
     }
 }

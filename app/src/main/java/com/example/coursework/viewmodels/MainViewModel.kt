@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.example.coursework.ScheduleItem
+import com.example.coursework.SubjectItem
 import com.example.coursework.data.ScheduleRetrofit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,18 +16,18 @@ import org.jsoup.nodes.Document
 class MainViewModel(private val retrofit: ScheduleRetrofit) : ViewModel() {
 
 
-    private var _scheduleItems = MutableLiveData<List<ScheduleItem>>()
-    val scheduleItems: LiveData<List<ScheduleItem>> = _scheduleItems
+    private var _subjectItems = MutableLiveData<List<SubjectItem>>()
+    val subjectItems: LiveData<List<SubjectItem>> = _subjectItems
 
     fun loadSchedule(group: String, week: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val responseBody = retrofit.loadSchedule(group, week).string()
-            _scheduleItems.postValue(parseHtmlForSchedule(responseBody))
+            _subjectItems.postValue(parseHtmlForSchedule(responseBody))
         }
     }
 
-    private fun parseHtmlForSchedule(html: String?): List<ScheduleItem> {
-        val scheduleItems = mutableListOf<ScheduleItem>()
+    private fun parseHtmlForSchedule(html: String?): List<SubjectItem> {
+        val subjectItems = mutableListOf<SubjectItem>()
 
         if (!html.isNullOrEmpty()) {
             val doc: Document = Jsoup.parse(html)
@@ -51,23 +51,23 @@ class MainViewModel(private val retrofit: ScheduleRetrofit) : ViewModel() {
                     val teacher = columns[4].text()
                     val aud = columns[5].text()
 
-                    val scheduleItem =
-                        ScheduleItem(num, time, lessonType, lesson, teacher, aud, currentDay)
-                    scheduleItems.add(scheduleItem)
+                    val subjectItem =
+                        SubjectItem(num, time, lessonType, lesson, teacher, aud, currentDay)
+                    subjectItems.add(subjectItem)
                 } else if (columns.size == 4) {
                     val lessonType = columns[0].text()
                     val lesson = columns[1].text()
                     val teacher = columns[2].text()
                     val aud = columns[3].text()
 
-                    val scheduleItem =
-                        ScheduleItem("", "", lessonType, lesson, teacher, aud, currentDay)
-                    scheduleItems.add(scheduleItem)
+                    val subjectItem =
+                        SubjectItem("", "", lessonType, lesson, teacher, aud, currentDay)
+                    subjectItems.add(subjectItem)
                 }
             }
         }
 
-        return scheduleItems
+        return subjectItems
     }
 
     companion object {

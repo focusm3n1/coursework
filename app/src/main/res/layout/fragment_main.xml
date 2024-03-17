@@ -16,7 +16,7 @@
         android:elevation="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">>
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/textGroup"
@@ -31,13 +31,13 @@
 
         <ImageView
             android:id="@+id/iconLeft"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="37dp"
+            android:layout_height="39dp"
             android:layout_below="@id/textGroup"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="24dp"
+            android:layout_marginTop="-13dp"
+            android:layout_marginEnd="46dp"
             android:layout_toStartOf="@id/textDate"
-            android:src="@drawable/ic_arrow_left"/>
+            android:src="@drawable/ic_arrow_left" />
 
         <TextView
             android:id="@+id/textDate"
@@ -52,13 +52,13 @@
 
         <ImageView
             android:id="@+id/iconRight"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="46dp"
+            android:layout_height="39dp"
             android:layout_below="@id/textGroup"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="24dp"
+            android:layout_marginStart="35dp"
+            android:layout_marginTop="-13dp"
             android:layout_toEndOf="@id/textDate"
-            android:src="@drawable/ic_arrow_right"/>
+            android:src="@drawable/ic_arrow_right" />
 
     </RelativeLayout>
 

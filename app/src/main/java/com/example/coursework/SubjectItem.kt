@@ -1,6 +1,6 @@
 package com.example.coursework
 
-data class ScheduleItem(
+data class SubjectItem(
     val num: String,
     val time: String,
     val lessonType: String,

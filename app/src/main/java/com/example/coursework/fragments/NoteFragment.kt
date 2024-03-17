@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -35,6 +36,7 @@ class NoteFragment : DialogFragment() {
 
         binding.okButton.setOnClickListener {
             viewModel.saveScheduleItem(binding.editText.text.toString())
+            showNoteSavedNotification()
             dismiss()
         }
 
@@ -49,6 +51,10 @@ class NoteFragment : DialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun showNoteSavedNotification() {
+        Toast.makeText(context, "Заметка успешно сохранена", Toast.LENGTH_SHORT).show()
     }
 
     companion object {

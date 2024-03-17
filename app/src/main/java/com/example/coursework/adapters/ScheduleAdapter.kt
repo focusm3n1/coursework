@@ -1,4 +1,4 @@
-package com.example.coursework
+package com.example.coursework.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.coursework.DayItem
+import com.example.coursework.R
 import com.example.coursework.fragments.ActionInterface
 
 class ScheduleAdapter(
