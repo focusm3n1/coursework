@@ -1,8 +1,6 @@
 package com.example.coursework.fragments
 
 import android.app.DatePickerDialog
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
@@ -12,13 +10,13 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.coursework.DayItem
 import com.example.coursework.ScheduleAdapter
-import com.example.coursework.ScheduleItem
 import com.example.coursework.databinding.FragmentMainBinding
 import com.example.coursework.viewmodels.MainViewModel
 import java.text.SimpleDateFormat
@@ -37,11 +35,11 @@ class MainFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        super.onCreate(savedInstanceState)
-        _binding = FragmentMainBinding.inflate(layoutInflater, container, false)
+        _binding = FragmentMainBinding.inflate(inflater, container, false)
         textDate = binding.textDate
+        textGroup = binding.textGroup
         setCurrentWeek()
-        loadSchedule(currentGroup, currentWeek)
+
         binding.iconLeft.setOnClickListener {
             loadNextWeek(false)
         }
@@ -54,12 +52,20 @@ class MainFragment : Fragment() {
             showGroupInputDialog()
         }
 
-        textDate.setOnClickListener {
-            showCalendar()
-        }
 
         return binding.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.scheduleRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        viewModel.scheduleItems.observe(viewLifecycleOwner) { scheduleItems ->
+            val daysWithSubjects = scheduleItems.groupBy { it.currentDay }
+                .map { (day, subjects) -> DayItem(day, subjects) }
+            updateScheduleUI(daysWithSubjects)
+        }
+    }
+
 
     private fun showGroupInputDialog() {
         val builder = AlertDialog.Builder(requireContext())
@@ -88,54 +94,6 @@ class MainFragment : Fragment() {
             loadSchedule(it, currentWeek)
         }
     }
-
-    private fun showCalendar() {
-        val calendar = Calendar.getInstance()
-        val currentYear = calendar.get(Calendar.YEAR)
-        val currentMonth = calendar.get(Calendar.MONTH)
-        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
-
-        val datePickerDialog = DatePickerDialog(
-            requireContext(),
-            { _, year, month, day ->
-                val selectedCalendar = Calendar.getInstance()
-                selectedCalendar.timeInMillis = 0
-                selectedCalendar.set(Calendar.YEAR, year)
-                selectedCalendar.set(Calendar.MONTH, month)
-                selectedCalendar.set(Calendar.DAY_OF_MONTH, day)
-
-                // Находим первый день недели (понедельник)
-                selectedCalendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
-
-                // Переходим к началу выбранной недели
-                while (selectedCalendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
-                    selectedCalendar.add(Calendar.DATE, -1)
-                }
-
-                // Форматируем начало и конец выбранной недели в формат "ddMMyyyy"
-                val formatter = SimpleDateFormat("ddMMyyyy", Locale.getDefault())
-                val startOfWeek = formatter.format(selectedCalendar.time)
-                selectedCalendar.add(Calendar.DATE, 6)
-                val endOfWeek = formatter.format(selectedCalendar.time)
-
-                // Обновляем переменную currentWeek
-                currentWeek = startOfWeek + endOfWeek
-                Log.d("MainFragment", "Selected Week: $currentWeek")
-
-                // Обновляем текст в TextView с датой
-                textDate.text = "$startOfWeek - $endOfWeek"
-
-                // Перезагружаем расписание для выбранной недели
-                loadSchedule(currentGroup, currentWeek)
-            },
-            currentYear,
-            currentMonth,
-            currentDay
-        )
-
-        datePickerDialog.show()
-    }
-
 
     private fun setCurrentWeek() {
         val formatter = SimpleDateFormat("ddMMyyyy", Locale.getDefault())
@@ -209,20 +167,23 @@ class MainFragment : Fragment() {
     private fun loadSchedule(group: String?, week: String) {
         group?.let {
             viewModel.loadSchedule(it, week)
-            viewModel.scheduleItems.observe(viewLifecycleOwner) {
-                updateScheduleUI(it)
+            viewModel.scheduleItems.observe(viewLifecycleOwner) { scheduleItems ->
+                val daysWithSubjects = scheduleItems.groupBy { it.currentDay }
+                    .map { (day, subjects) -> DayItem(day, subjects) }
+                updateScheduleUI(daysWithSubjects)
             }
         }
     }
 
-    private fun updateScheduleUI(scheduleItems: List<ScheduleItem>) {
+
+    private fun updateScheduleUI(dayItems: List<DayItem>) {
         val recyclerView: RecyclerView = binding.scheduleRecyclerView
-        if (scheduleItems.isEmpty()) {
+        if (dayItems.isEmpty()) {
             val noClassesTextView: TextView = binding.noClassesTextView
             noClassesTextView.visibility = View.VISIBLE
             recyclerView.visibility = View.GONE
         } else {
-            val adapter = ScheduleAdapter(scheduleItems, action)
+            val adapter = ScheduleAdapter(dayItems, action)
             recyclerView.adapter = adapter
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
             val noClassesTextView: TextView = binding.noClassesTextView
@@ -230,6 +191,7 @@ class MainFragment : Fragment() {
             recyclerView.visibility = View.VISIBLE
         }
     }
+
 
     private val action = object : ActionInterface {
         override fun onButtonClick(currentDay: String, lesson: String) {

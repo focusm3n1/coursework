@@ -33,12 +33,12 @@ class NoteFragment : DialogFragment() {
             binding.editText.setText(it.note)
         }
 
-        binding.saveButton.setOnClickListener {
+        binding.okButton.setOnClickListener {
             viewModel.saveScheduleItem(binding.editText.text.toString())
             dismiss()
         }
 
-        binding.backButton.setOnClickListener {
+        binding.cancelButton.setOnClickListener {
             dismiss()
         }
 

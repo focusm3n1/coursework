@@ -2,22 +2,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/weekDay"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#6200FF"
-        android:text="Дата"
-        android:textSize="20sp"
-        android:textColor="@android:color/white"
-        android:textStyle="bold" />
 
 
     <LinearLayout
         android:id="@+id/subjectItem"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="10dp"
         android:background="#FFFFFF"
         android:elevation="8dp"
         android:orientation="horizontal">
@@ -32,6 +23,7 @@
                 android:id="@+id/num"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:text="Номер пары"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -51,24 +43,22 @@
             android:elevation="8dp"
             android:orientation="vertical">
 
-            <!-- "Тип", "Номер п/г", "Онлайн" -->
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:background="@drawable/rounded_corner_background">
 
                 <TextView
                     android:id="@+id/lessonType"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="#FF00E6"
                     android:text="Тип"
                     android:textColor="@android:color/white" />
 
             </LinearLayout>
 
-            <!-- Добавлено расстояние между блоками -->
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="8dp" />
@@ -99,8 +89,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="start"
                 android:text="Заметка"
-                android:textStyle="bold"
-                android:visibility="gone"/>
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/addNoteButton"
@@ -112,7 +101,7 @@
                 android:text="К заметке"
                 android:textColor="@android:color/white"
                 android:textSize="10sp"
-                android:visibility="gone"/>
+                />
         </LinearLayout>
 
     </LinearLayout>

@@ -54,7 +54,6 @@ class MainViewModel(private val retrofit: ScheduleRetrofit) : ViewModel() {
                     val scheduleItem =
                         ScheduleItem(num, time, lessonType, lesson, teacher, aud, currentDay)
                     scheduleItems.add(scheduleItem)
-                    currentDay = "$currentDay "
                 } else if (columns.size == 4) {
                     val lessonType = columns[0].text()
                     val lesson = columns[1].text()
