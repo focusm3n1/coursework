@@ -7,5 +7,5 @@ data class ScheduleItem(
     val lesson: String,
     val teacher: String,
     val aud: String,
-    val currentDay: String
+    val currentDay: String,
 )

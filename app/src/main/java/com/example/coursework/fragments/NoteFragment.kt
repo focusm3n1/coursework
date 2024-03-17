@@ -4,22 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.coursework.databinding.FragmentNoteBinding
 import com.example.coursework.viewmodels.NoteViewModel
 
+class NoteFragment : DialogFragment() {
 
-class NoteFragment : Fragment() {
+    private var _binding: FragmentNoteBinding? = null
+    private val binding get() = _binding!!
 
-    private val args by navArgs<com.example.coursework.fragments.NoteFragmentArgs>()
+    private val args by navArgs<NoteFragmentArgs>()
     private val currentDay by lazy { args.currentDay }
     private val lesson by lazy { args.lesson }
     private val viewModel: NoteViewModel by viewModels { NoteViewModel.Factory(currentDay, lesson) }
-    private var _binding: FragmentNoteBinding? = null
-    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -35,19 +35,31 @@ class NoteFragment : Fragment() {
 
         binding.saveButton.setOnClickListener {
             viewModel.saveScheduleItem(binding.editText.text.toString())
-            val action =
-                com.example.coursework.fragments.NoteFragmentDirections.actionNoteFragmentToMainFragment()
-            findNavController().navigate(action)
+            dismiss()
         }
 
         binding.backButton.setOnClickListener {
-            val action =
-                com.example.coursework.fragments.NoteFragmentDirections.actionNoteFragmentToMainFragment()
-            findNavController().navigate(action)
+            dismiss()
         }
+
 
         return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
+    companion object {
+        fun newInstance(currentDay: String, lesson: String): NoteFragment {
+            val fragment = NoteFragment()
+            val args = Bundle().apply {
+                putString("currentDay", currentDay)
+                putString("lesson", lesson)
+            }
+            fragment.arguments = args
+            return fragment
+        }
+    }
 }

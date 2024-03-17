@@ -1,5 +1,8 @@
 package com.example.coursework.fragments
 
+import android.app.DatePickerDialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
@@ -27,7 +30,7 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var textDate: TextView
     private val viewModel: MainViewModel by viewModels { MainViewModel.Factory() }
-    private var currentGroup: String = "рп12002109"
+    private var currentGroup: String? = null
     private lateinit var textGroup: TextView
     private var currentWeek: String = ""
 
@@ -50,16 +53,21 @@ class MainFragment : Fragment() {
         binding.textGroup.setOnClickListener {
             showGroupInputDialog()
         }
+
+        textDate.setOnClickListener {
+            showCalendar()
+        }
+
         return binding.root
     }
 
     private fun showGroupInputDialog() {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Введите новую группу")
+        builder.setTitle("Введите группу")
 
         val input = EditText(requireContext())
         input.inputType = InputType.TYPE_CLASS_TEXT
-        input.setText(currentGroup)
+        currentGroup?.let { input.setText(it) }
         builder.setView(input)
 
         builder.setPositiveButton("OK") { _, _ ->
@@ -75,9 +83,59 @@ class MainFragment : Fragment() {
     }
 
 
-    private fun updateScheduleForGroup(newGroup: String) {
-        loadSchedule(currentGroup, currentWeek)
+    private fun updateScheduleForGroup(newGroup: String?) {
+        newGroup?.let {
+            loadSchedule(it, currentWeek)
+        }
     }
+
+    private fun showCalendar() {
+        val calendar = Calendar.getInstance()
+        val currentYear = calendar.get(Calendar.YEAR)
+        val currentMonth = calendar.get(Calendar.MONTH)
+        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            { _, year, month, day ->
+                val selectedCalendar = Calendar.getInstance()
+                selectedCalendar.timeInMillis = 0
+                selectedCalendar.set(Calendar.YEAR, year)
+                selectedCalendar.set(Calendar.MONTH, month)
+                selectedCalendar.set(Calendar.DAY_OF_MONTH, day)
+
+                // Находим первый день недели (понедельник)
+                selectedCalendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+
+                // Переходим к началу выбранной недели
+                while (selectedCalendar.get(Calendar.DAY_OF_WEEK) != Calendar.MONDAY) {
+                    selectedCalendar.add(Calendar.DATE, -1)
+                }
+
+                // Форматируем начало и конец выбранной недели в формат "ddMMyyyy"
+                val formatter = SimpleDateFormat("ddMMyyyy", Locale.getDefault())
+                val startOfWeek = formatter.format(selectedCalendar.time)
+                selectedCalendar.add(Calendar.DATE, 6)
+                val endOfWeek = formatter.format(selectedCalendar.time)
+
+                // Обновляем переменную currentWeek
+                currentWeek = startOfWeek + endOfWeek
+                Log.d("MainFragment", "Selected Week: $currentWeek")
+
+                // Обновляем текст в TextView с датой
+                textDate.text = "$startOfWeek - $endOfWeek"
+
+                // Перезагружаем расписание для выбранной недели
+                loadSchedule(currentGroup, currentWeek)
+            },
+            currentYear,
+            currentMonth,
+            currentDay
+        )
+
+        datePickerDialog.show()
+    }
+
 
     private fun setCurrentWeek() {
         val formatter = SimpleDateFormat("ddMMyyyy", Locale.getDefault())
@@ -103,7 +161,11 @@ class MainFragment : Fragment() {
 
         textDate.text = "$currentDateString - $endDateFormattedString"
         textGroup = binding.textGroup
-        textGroup.text = "Группа $currentGroup"
+        currentGroup?.let {
+            textGroup.text = "Группа $it"
+        } ?: run {
+            textGroup.text = "Введите группу"
+        }
     }
 
 
@@ -144,10 +206,12 @@ class MainFragment : Fragment() {
 
 
 
-    private fun loadSchedule(group: String, week: String) {
-        viewModel.loadSchedule(group, week)
-        viewModel.scheduleItems.observe(viewLifecycleOwner) {
-            updateScheduleUI(it)
+    private fun loadSchedule(group: String?, week: String) {
+        group?.let {
+            viewModel.loadSchedule(it, week)
+            viewModel.scheduleItems.observe(viewLifecycleOwner) {
+                updateScheduleUI(it)
+            }
         }
     }
 
@@ -169,12 +233,8 @@ class MainFragment : Fragment() {
 
     private val action = object : ActionInterface {
         override fun onButtonClick(currentDay: String, lesson: String) {
-            val action =
-                com.example.coursework.fragments.MainFragmentDirections.actionMainFragmentToNoteFragment(
-                    currentDay,
-                    lesson
-                )
-            findNavController().navigate(action)
+            val NoteDialog = NoteFragment.newInstance(currentDay, lesson)
+            NoteDialog.show(parentFragmentManager, "note_dialog")
         }
     }
 

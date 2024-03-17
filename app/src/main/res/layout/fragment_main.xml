@@ -14,12 +14,10 @@
         android:layout_height="80dp"
         android:background="#FFFFFF"
         android:elevation="8dp"
-        android:layout_margin="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <!-- Текст "Группа" -->
         <TextView
             android:id="@+id/textGroup"
             android:layout_width="wrap_content"
@@ -65,7 +63,8 @@
         android:id="@+id/noClassesTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Занятий нету, отдыхаем)"
+        android:layout_marginTop="16dp"
+        android:text="Нет занятий"
         android:textSize="22sp"
         android:textStyle="bold"
         android:gravity="center"
