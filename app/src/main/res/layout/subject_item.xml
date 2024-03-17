@@ -25,6 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:text="Номер пары"
+                android:layout_marginLeft="1dp"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -32,6 +33,7 @@
                 android:id="@+id/time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="1dp"
                 android:text="Время" />
 
         </LinearLayout>
@@ -83,24 +85,19 @@
                 android:layout_height="wrap_content"
                 android:text="Аудитория" />
 
-            <TextView
-                android:id="@+id/noteTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="start"
-                android:text="Заметка"
-                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/addNoteButton"
                 android:layout_width="wrap_content"
-                android:layout_height="30dp"
+                android:layout_height="40dp"
                 android:layout_gravity="end"
-                android:background="@android:color/holo_blue_light"
                 android:padding="5dp"
                 android:text="К заметке"
                 android:textColor="@android:color/white"
                 android:textSize="10sp"
+                android:backgroundTint="#38B334"/>
+
+
                 />
         </LinearLayout>
 

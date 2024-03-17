@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:elevation="8dp"
+    tools:context=".fragments.NoteFragment">
+
+    <TextView
+        android:id="@+id/lessonType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Тип"
+        android:textColor="@android:color/white"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+
+        android:background="@drawable/rounded_corner_background"/>
+
+    <TextView
+        android:id="@+id/lesson"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Название предмета"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:layout_marginLeft="8dp"
+        app:layout_constraintTop_toBottomOf="@id/lessonType"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/teacher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginLeft="8dp"
+        android:text="Преподаватель"
+        android:textSize="18sp"
+        android:textAlignment="center"
+        app:layout_constraintTop_toBottomOf="@id/lesson"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/aud"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Аудитория"
+        android:layout_marginLeft="8dp"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/teacher"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <Button
+        android:id="@+id/noteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="К заметке"
+        app:layout_constraintTop_toBottomOf="@id/aud"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/pageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="В курс"
+        app:layout_constraintTop_toBottomOf="@id/aud"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
