@@ -88,7 +88,7 @@ class MainFragment : Fragment() {
         builder.setPositiveButton("OK") { _, _ ->
             currentGroup = input.text.toString()
             textGroup.text = "Группа $currentGroup"
-            updateScheduleForGroup(currentGroup)
+            updateSchedule(currentGroup)
         }
 
         builder.setNegativeButton("Отмена") { dialog, _ -> dialog.cancel() }
@@ -96,7 +96,7 @@ class MainFragment : Fragment() {
         builder.show()
     }
 
-    private fun updateScheduleForGroup(newGroup: String?) {
+    private fun updateSchedule(newGroup: String?) {
         newGroup?.let {
             loadSchedule(it, currentWeek)
         }
