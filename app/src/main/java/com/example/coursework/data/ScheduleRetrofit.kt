@@ -14,8 +14,7 @@ interface ScheduleRetrofit {
     suspend fun loadSchedule(
         @Field("group") group: String,
         @Field("week") week: String,
-        @Field("fak") fak: String = "",
-        @Field("frm") frm: String = ""
+        @Field("fak") fak: String = ""
     ): ResponseBody
 
     companion object {

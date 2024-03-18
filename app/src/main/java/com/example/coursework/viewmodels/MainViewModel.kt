@@ -22,11 +22,11 @@ class MainViewModel(private val retrofit: ScheduleRetrofit) : ViewModel() {
     fun loadSchedule(group: String, week: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val responseBody = retrofit.loadSchedule(group, week).string()
-            _subjectItems.postValue(parseHtml(responseBody))
+            _subjectItems.postValue(parseSchedule(responseBody))
         }
     }
 
-    private fun parseHtml(html: String?): List<SubjectItem> {
+    private fun parseSchedule(html: String?): List<SubjectItem> {
         val subjectItems = mutableListOf<SubjectItem>()
 
         if (html.isNullOrEmpty()) {
