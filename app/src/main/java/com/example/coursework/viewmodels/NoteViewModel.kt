@@ -12,18 +12,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class NoteViewModel(
-    private val scheduleDao: ScheduleDao, val currentDay: String, val lesson: String
+    private val scheduleDao: ScheduleDao,
+    private val currentDay: String,
+    private val lesson: String
 ) : ViewModel() {
 
-    var scheduleItem = MutableLiveData<ScheduleEntity>()
+    val scheduleItem = MutableLiveData<ScheduleEntity>()
 
     init {
-        val itemFromDb = scheduleDao.getNoteForScheduleItem(currentDay, lesson)
-        if (itemFromDb == null) {
-            scheduleItem.postValue(ScheduleEntity(null, currentDay, lesson, ""))
-        } else {
-            scheduleItem.postValue(scheduleDao.getNoteForScheduleItem(currentDay, lesson))
-        }
+        scheduleItem.value = scheduleDao.getNoteForScheduleItem(currentDay, lesson) ?: ScheduleEntity(null, currentDay, lesson, "")
     }
 
     fun saveScheduleItem(note: String) {
@@ -34,7 +31,6 @@ class NoteViewModel(
                 )
             )
         }
-
     }
 
     companion object {
@@ -46,7 +42,7 @@ class NoteViewModel(
                     modelClass: Class<T>, extras: CreationExtras
                 ): T {
                     val application =
-                        checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY])
+                        extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] ?: error("Application is null")
                     return NoteViewModel(
                         ScheduleDatabase.getInstance(application).scheduleDao(), currentDay, lesson
                     ) as T

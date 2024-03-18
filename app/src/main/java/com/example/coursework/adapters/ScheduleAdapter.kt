@@ -26,20 +26,14 @@ class ScheduleAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val dayItem = dayItems[position]
-
-        holder.weekDayTextView.text = dayItem.currentDay
-
-        val subjectsAdapter = SubjectAdapter(dayItem.subjects, action)
-        holder.subjectsRecyclerView.apply {
-            adapter = subjectsAdapter
-            layoutManager = LinearLayoutManager(context)
+        dayItems[position].let { dayItem ->
+            holder.weekDayTextView.text = dayItem.currentDay
+            holder.subjectsRecyclerView.apply {
+                layoutManager = LinearLayoutManager(context)
+                adapter = SubjectAdapter(dayItem.subjects, action)
+            }
         }
     }
 
-    override fun getItemCount(): Int {
-        return dayItems.size
-    }
-
+    override fun getItemCount(): Int = dayItems.size
 }
-

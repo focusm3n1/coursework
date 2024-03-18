@@ -5,6 +5,8 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AlphaAnimation
+import android.view.animation.Animation
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
@@ -24,9 +26,9 @@ class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
     private lateinit var textDate: TextView
+    private lateinit var textGroup: TextView
     private val viewModel: MainViewModel by viewModels { MainViewModel.Factory() }
     private var currentGroup: String? = null
-    private lateinit var textGroup: TextView
     private var currentWeek: String = ""
 
     override fun onCreateView(
@@ -49,7 +51,6 @@ class MainFragment : Fragment() {
             showGroupInputDialog()
         }
 
-
         return binding.root
     }
 
@@ -61,8 +62,19 @@ class MainFragment : Fragment() {
                 .map { (day, subjects) -> DayItem(day, subjects) }
             updateScheduleUI(daysWithSubjects)
         }
+
+        if (binding.textGroup.text == "Введите группу") {
+            blinkAnimation(binding.textGroup)
+        }
     }
 
+    private fun blinkAnimation(view: View) {
+        val blinkAnimation = AlphaAnimation(0.0f, 1.0f)
+        blinkAnimation.duration = 500
+        blinkAnimation.repeatCount = 5
+        blinkAnimation.repeatMode = Animation.REVERSE
+        view.startAnimation(blinkAnimation)
+    }
 
     private fun showGroupInputDialog() {
         val builder = AlertDialog.Builder(requireContext())
@@ -75,8 +87,7 @@ class MainFragment : Fragment() {
 
         builder.setPositiveButton("OK") { _, _ ->
             currentGroup = input.text.toString()
-            textGroup.text =
-                "Группа $currentGroup"
+            textGroup.text = "Группа $currentGroup"
             updateScheduleForGroup(currentGroup)
         }
 
@@ -84,7 +95,6 @@ class MainFragment : Fragment() {
 
         builder.show()
     }
-
 
     private fun updateScheduleForGroup(newGroup: String?) {
         newGroup?.let {
@@ -115,14 +125,12 @@ class MainFragment : Fragment() {
         val endDateFormattedString = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(endCalendar.time)
 
         textDate.text = "$currentDateString - $endDateFormattedString"
-        textGroup = binding.textGroup
         currentGroup?.let {
             textGroup.text = "Группа $it"
         } ?: run {
             textGroup.text = "Введите группу"
         }
     }
-
 
     private fun loadNextWeek(isNext: Boolean) {
         val formatter = SimpleDateFormat("ddMMyyyy", Locale.getDefault())
@@ -155,51 +163,36 @@ class MainFragment : Fragment() {
 
         textDate.text = "$currentDateString - $endDateString"
 
-
         loadSchedule(currentGroup, currentWeek)
     }
-
-
 
     private fun loadSchedule(group: String?, week: String) {
         group?.let {
             viewModel.loadSchedule(it, week)
-            viewModel.subjectItems.observe(viewLifecycleOwner) { scheduleItems ->
-                val daysWithSubjects = scheduleItems.groupBy { it.currentDay }
-                    .map { (day, subjects) -> DayItem(day, subjects) }
-                updateScheduleUI(daysWithSubjects)
-            }
         }
     }
-
 
     private fun updateScheduleUI(dayItems: List<DayItem>) {
         val recyclerView: RecyclerView = binding.scheduleRecyclerView
-        if (dayItems.isEmpty()) {
-            val noClassesTextView: TextView = binding.noClassesTextView
-            noClassesTextView.visibility = View.VISIBLE
-            recyclerView.visibility = View.GONE
-        } else {
-            val adapter = ScheduleAdapter(dayItems, action)
-            recyclerView.adapter = adapter
-            recyclerView.layoutManager = LinearLayoutManager(requireContext())
-            val noClassesTextView: TextView = binding.noClassesTextView
-            noClassesTextView.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
-        }
+        val adapter = ScheduleAdapter(dayItems, action)
+        recyclerView.adapter = adapter
+        recyclerView.setVisible(dayItems.isNotEmpty())
+        binding.noClassesTextView.setVisible(dayItems.isEmpty())
     }
-
 
     private val action = object : ActionInterface {
         override fun onButtonClick(currentDay: String, lesson: String) {
-            val NoteDialog = NoteFragment.newInstance(currentDay, lesson)
-            NoteDialog.show(parentFragmentManager, "note_dialog")
+            val noteDialog = NoteFragment.newInstance(currentDay, lesson)
+            noteDialog.show(parentFragmentManager, "note_dialog")
         }
     }
 
 }
 
 interface ActionInterface {
-
     fun onButtonClick(currentDay: String, lesson: String)
+}
+
+fun View.setVisible(isVisible: Boolean) {
+    visibility = if (isVisible) View.VISIBLE else View.GONE
 }

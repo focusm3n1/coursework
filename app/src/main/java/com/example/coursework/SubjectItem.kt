@@ -1,5 +1,4 @@
 package com.example.coursework
-
 data class SubjectItem(
     val num: String,
     val time: String,

@@ -13,9 +13,7 @@ import com.example.coursework.viewmodels.NoteViewModel
 
 class NoteFragment : DialogFragment() {
 
-    private var _binding: FragmentNoteBinding? = null
-    private val binding get() = _binding!!
-
+    private var binding: FragmentNoteBinding? = null
     private val args by navArgs<NoteFragmentArgs>()
     private val currentDay by lazy { args.currentDay }
     private val lesson by lazy { args.lesson }
@@ -25,47 +23,50 @@ class NoteFragment : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentNoteBinding.inflate(layoutInflater, container, false)
+        binding = FragmentNoteBinding.inflate(inflater, container, false)
+        return binding!!.root
+    }
 
-        binding.currentDayTextView.text = currentDay
-        binding.lessonTextView.text = lesson
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        viewModel.scheduleItem.observe(viewLifecycleOwner) {
-            binding.editText.setText(it.note)
+        binding?.apply {
+            currentDayTextView.text = currentDay
+            lessonTextView.text = lesson
+
+            viewModel.scheduleItem.observe(viewLifecycleOwner) {
+                editText.setText(it.note)
+            }
+
+            okButton.setOnClickListener {
+                viewModel.saveScheduleItem(editText.text.toString())
+                showNoteSavedNotification()
+                dismiss()
+            }
+
+            cancelButton.setOnClickListener {
+                dismiss()
+            }
         }
-
-        binding.okButton.setOnClickListener {
-            viewModel.saveScheduleItem(binding.editText.text.toString())
-            showNoteSavedNotification()
-            dismiss()
-        }
-
-        binding.cancelButton.setOnClickListener {
-            dismiss()
-        }
-
-
-        return binding.root
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
+        binding = null
     }
 
     private fun showNoteSavedNotification() {
-        Toast.makeText(context, "Заметка успешно сохранена", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "Заметка успешно сохранена", Toast.LENGTH_SHORT).show()
     }
 
     companion object {
         fun newInstance(currentDay: String, lesson: String): NoteFragment {
-            val fragment = NoteFragment()
-            val args = Bundle().apply {
-                putString("currentDay", currentDay)
-                putString("lesson", lesson)
+            return NoteFragment().apply {
+                arguments = Bundle().apply {
+                    putString("currentDay", currentDay)
+                    putString("lesson", lesson)
+                }
             }
-            fragment.arguments = args
-            return fragment
         }
     }
 }

@@ -22,46 +22,40 @@ class MainViewModel(private val retrofit: ScheduleRetrofit) : ViewModel() {
     fun loadSchedule(group: String, week: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val responseBody = retrofit.loadSchedule(group, week).string()
-            _subjectItems.postValue(parseHtmlForSchedule(responseBody))
+            _subjectItems.postValue(parseHtml(responseBody))
         }
     }
 
-    private fun parseHtmlForSchedule(html: String?): List<SubjectItem> {
+    private fun parseHtml(html: String?): List<SubjectItem> {
         val subjectItems = mutableListOf<SubjectItem>()
 
-        if (!html.isNullOrEmpty()) {
-            val doc: Document = Jsoup.parse(html)
+        if (html.isNullOrEmpty()) {
+            return subjectItems
+        }
 
-            val rows = doc.select("tr:has(td)")
+        val doc: Document = Jsoup.parse(html)
+        val rows = doc.select("tr:has(td)")
 
-            var currentDay = ""
-            for (row in rows) {
-                val columns = row.select("td")
+        var currentDay = ""
+        for (row in rows) {
+            val columns = row.select("td")
 
-                if (columns.size == 1) {
-                    val headerDay = columns.select("span.h3 b")
+            when (columns.size) {
+                1 -> {
+                    val headerDay = columns.select("span.h3 b").text().trim()
                     if (headerDay.isNotEmpty()) {
-                        currentDay = headerDay.text().trim()
+                        currentDay = headerDay
                     }
-                } else if (columns.size == 6) {
-                    val num = columns[0].text()
-                    val time = columns[1].text()
-                    val lessonType = columns[2].text()
-                    val lesson = columns[3].text()
-                    val teacher = columns[4].text()
-                    val aud = columns[5].text()
+                }
+                4, 6 -> {
+                    val num = if (columns.size == 6) columns[0].text() else ""
+                    val time = if (columns.size == 6) columns[1].text() else ""
+                    val lessonType = columns[if (columns.size == 6) 2 else 0].text()
+                    val lesson = columns[if (columns.size == 6) 3 else 1].text()
+                    val teacher = columns[if (columns.size == 6) 4 else 2].text()
+                    val aud = columns[if (columns.size == 6) 5 else 3].text()
 
-                    val subjectItem =
-                        SubjectItem(num, time, lessonType, lesson, teacher, aud, currentDay)
-                    subjectItems.add(subjectItem)
-                } else if (columns.size == 4) {
-                    val lessonType = columns[0].text()
-                    val lesson = columns[1].text()
-                    val teacher = columns[2].text()
-                    val aud = columns[3].text()
-
-                    val subjectItem =
-                        SubjectItem("", "", lessonType, lesson, teacher, aud, currentDay)
+                    val subjectItem = SubjectItem(num, time, lessonType, lesson, teacher, aud, currentDay)
                     subjectItems.add(subjectItem)
                 }
             }
